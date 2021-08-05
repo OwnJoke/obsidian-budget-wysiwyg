@@ -1,15 +1,15 @@
 import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
-interface MyPluginSettings {
+interface budgetPluginSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: budgetPluginSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class budgetPlugin extends Plugin {
+	settings: budgetPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
