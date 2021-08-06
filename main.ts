@@ -40,10 +40,10 @@ export default class BudgetPlugin extends Plugin {
 			}
 			let classname = document.activeElement.className
 			let placeholder = document.activeElement.getAttribute('placeholder')
-			if(placeholder === 'Type to start search...') {
+			if(placeholder) {
 				return
 			}
-			if(classname === 'prompt-input' || classname === 'view-header-title') {
+			if(classname === 'view-header-title') {
 				return
 			}
 			if(activeView.getMode() === 'preview'){
