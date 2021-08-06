@@ -38,6 +38,14 @@ export default class BudgetPlugin extends Plugin {
 			if (!activeView) {
 				return;
 			}
+			let classname = document.activeElement.className
+			let placeholder = document.activeElement.getAttribute('placeholder')
+			if(placeholder === 'Type to start search...') {
+				return
+			}
+			if(classname === 'prompt-input' || classname === 'view-header-title') {
+				return
+			}
 			if(activeView.getMode() === 'preview'){
 				let viewstate = activeView.leaf.getViewState()
 				viewstate.state.mode = 'source'
