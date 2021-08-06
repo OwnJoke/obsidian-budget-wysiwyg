@@ -1,4 +1,4 @@
-import { App, MarkdownView, Plugin, PluginSettingTab, Setting, debounce, Debouncer } from 'obsidian';
+import { App, MarkdownView, Plugin, PluginSettingTab, Setting, debounce } from 'obsidian';
 
 interface BudgetPluginSettings {
 	mySetting: string;
