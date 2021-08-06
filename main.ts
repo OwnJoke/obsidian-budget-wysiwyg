@@ -1,68 +1,70 @@
-import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, MarkdownView, Plugin, PluginSettingTab, Setting, debounce, Debouncer } from 'obsidian';
 
-interface budgetPluginSettings {
+interface BudgetPluginSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: budgetPluginSettings = {
+const DEFAULT_SETTINGS: BudgetPluginSettings = {
 	mySetting: 'default'
 }
 
-export default class budgetPlugin extends Plugin {
-	settings: budgetPluginSettings;
+export default class BudgetPlugin extends Plugin {
+	settings: BudgetPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
+		const self = this;
 
 		function doneTyping() {
+			const activeView = self.app.workspace.getActiveViewOfType(MarkdownView);
+			if (!activeView) {
+				return;
+			}
+			let selection = activeView.editor.getSelection()
+			if (selection) {
+				return;
+			}
+			cursorpos = activeView.editor.getCursor()
+			let viewstate = activeView.leaf.getViewState()
+			viewstate.state.mode = 'preview'
+			activeView.leaf.setViewState(viewstate)
+		}
+
+		this.registerDomEvent(document, 'keydown', (evt: KeyboardEvent) => {
+			if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
+				return;
+			}
 			const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (!activeView) {
 				return;
 			}
-			let selection = activeView.sourceMode.getSelection()
-			if (selection) {
-				return;
-			}
-			cursorpos = activeView.sourceMode.cmEditor.getCursor()
-			this.app.workspace.activeLeaf.setViewState({state: {file: this.app.workspace.getActiveFile().path, mode: "preview"}, type: "markdown"})
-		}
-
-		this.registerDomEvent(document, 'keydown', (evt: KeyboardEvent) => {
-			if(evt.key === 'Control') {
-				return;
-			}
-			clearTimeout(typingTimer);
-			let v = this.app.workspace.activeLeaf.getViewState()
-			if(v.state.mode === 'preview'){
-				this.app.workspace.activeLeaf.setViewState({state: {file: this.app.workspace.getActiveFile().path, mode: "source"}, type: "markdown"})
-				const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (!activeView) {
-					return;
-				}
-				let editor = activeView.sourceMode.cmEditor;
-    		editor.focus();
+			if(activeView.getMode() === 'preview'){
+				let viewstate = activeView.leaf.getViewState()
+				viewstate.state.mode = 'source'
+				activeView.leaf.setViewState(viewstate)
+    		activeView.editor.focus();
 				if(cursorpos) {
-					editor.setCursor({ line: cursorpos.line, ch: cursorpos.ch });
+					activeView.editor.setCursor({ line: cursorpos.line, ch: cursorpos.ch });
 				} else {
-					editor.setCursor(editor.lastLine());
+					activeView.editor.setCursor(activeView.editor.lastLine());
 				}
 			}
 		});
-		let typingTimer: any
 		let cursorpos: any
+		let debouncef = debounce(doneTyping, 2000, true)
 
 		this.registerDomEvent(document, 'mousedown', (evt: MouseEvent) => {
-			clearTimeout(typingTimer);
 		});
 
 		this.registerDomEvent(document, 'mouseup', (evt: MouseEvent) => {
-			clearTimeout(typingTimer);
-			typingTimer = setTimeout(doneTyping, 2000);
+			debouncef()
 		});
 
 		this.registerDomEvent(document, 'keyup', (evt: KeyboardEvent) => {
-			clearTimeout(typingTimer);
-			typingTimer = setTimeout(doneTyping, 2000);
+			if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
+				return;
+			}
+			debouncef()
 		});
 	}
 
