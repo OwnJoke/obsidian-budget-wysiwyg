@@ -43,7 +43,6 @@ export default class BudgetPlugin extends Plugin {
 			if(placeholder) {
 				return
 			}
-			console.log(classname)
 			//if(classname === 'view-header-title') {
 			//	return
 			//}
@@ -67,6 +66,10 @@ export default class BudgetPlugin extends Plugin {
 			if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
 				return;
 			}
+			debouncef()
+		});
+
+		this.registerDomEvent(document, 'mouseup', (evt: MouseEvent) => {
 			debouncef()
 		});
 	}
