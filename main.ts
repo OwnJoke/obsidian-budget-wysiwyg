@@ -43,30 +43,25 @@ export default class BudgetPlugin extends Plugin {
 			if(placeholder) {
 				return
 			}
-			if(classname === 'view-header-title') {
-				return
-			}
-			if(activeView.getMode() === 'preview'){
-				let viewstate = activeView.leaf.getViewState()
-				viewstate.state.mode = 'source'
-				activeView.leaf.setViewState(viewstate)
-    		activeView.editor.focus();
-				if(cursorpos) {
-					activeView.editor.setCursor({ line: cursorpos.line, ch: cursorpos.ch });
-				} else {
-					activeView.editor.setCursor(activeView.editor.lastLine());
-				}
-			}
+			console.log(classname)
+			//if(classname === 'view-header-title') {
+			//	return
+			//}
+			if(classname.includes('markdown-preview-view')){
+				if(activeView.getMode() === 'preview'){
+					let viewstate = activeView.leaf.getViewState()
+					viewstate.state.mode = 'source'
+					activeView.leaf.setViewState(viewstate)
+					activeView.editor.focus();
+					if(cursorpos)  {
+						activeView.editor.setCursor({ line: cursorpos.line, ch: cursorpos.ch });
+					} else {
+						activeView.editor.setCursor(activeView.editor.lastLine());
+					}
+				}}
 		});
 		let cursorpos: any
 		let debouncef = debounce(doneTyping, 2000, true)
-
-		this.registerDomEvent(document, 'mousedown', (evt: MouseEvent) => {
-		});
-
-		this.registerDomEvent(document, 'mouseup', (evt: MouseEvent) => {
-			debouncef()
-		});
 
 		this.registerDomEvent(document, 'keyup', (evt: KeyboardEvent) => {
 			if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
