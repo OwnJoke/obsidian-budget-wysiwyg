@@ -1,3 +1,5 @@
+## THIS PLUGIN IS CURRENTLY BROKEN AND NOT RECEIVING UPDATES
+
 # Budget WYSIWYG
 
 Budget WYSIWYG is a plugin that automatically switches between preview mode and source mode based on if you are typing or not.
