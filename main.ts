@@ -1,18 +1,14 @@
 import { App, MarkdownView, Plugin, PluginSettingTab, Setting, debounce } from 'obsidian';
+import {DEFAULT_SETTINGS, BudgetPluginSettings, BudgetSettings} from "./settings";
 
-interface BudgetPluginSettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: BudgetPluginSettings = {
-	mySetting: 'default'
-}
 
 export default class BudgetPlugin extends Plugin {
 	settings: BudgetPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
+		this.addSettingTab(new BudgetSettings(this.app, this));
+
 		const self = this;
 
 		function doneTyping() {
@@ -60,7 +56,9 @@ export default class BudgetPlugin extends Plugin {
 				}}
 		});
 		let cursorpos: any
-		let debouncef = debounce(doneTyping, 2000, true)
+		// Settings takes number of seconds, debounce takes ms
+		const timeout = Number(this.settings.previewModeSwitchDelay) * 1000;
+		let debouncef = debounce(doneTyping, timeout, true)
 
 		this.registerDomEvent(document, 'keyup', (evt: KeyboardEvent) => {
 			if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
